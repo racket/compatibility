@@ -645,7 +645,9 @@
 					 swapped-renames)
 				  (loop (cdr e))
 				  (cons (car e) (loop (cdr e)))))))]
-		   [local-vars (append renamed-internals filtered-exported-names imported-names)]
+		   [local-vars (map (lambda (s)
+                                      (datum->syntax-object expr s))
+                                    (append renamed-internals filtered-exported-names imported-names))]
 		   [expand-context (generate-expand-context)]
 		   [import-stxes (apply append (map (lambda (i) 
 						      (map
@@ -665,6 +667,7 @@
 	      (let loop ([pre-lines null][lines (append import-stxes body)][port #f][port-name #f][body null][vars null])
 		(cond
 		 [(and (null? pre-lines) (not port) (null? lines))
+                  (internal-definition-context-seal def-ctx)
 		  (make-parsed-unit imports 
 				    renames 
 				    vars 

@@ -467,14 +467,26 @@
 ;; Creates a simple function type that can be used for callouts and callbacks,
 ;; optionally applying a wrapper function to modify the result primitive
 ;; (callouts) or the input procedure (callbacks).
-(define* (_cprocedure itypes otype [abi #f] [wrapper #f])
-  (if wrapper
+(define* (_cprocedure itypes otype
+                      #:abi [abi #f] #:wrapper [wrapper #f] #:keep [keep #f])
+  (_cprocedure* itypes otype abi wrapper keep))
+
+;; for internal use
+(define held-callbacks (make-weak-hasheq))
+(define (_cprocedure* itypes otype abi wrapper keep)
+  (define-syntax-rule (make-it wrap)
     (make-ctype _fpointer
-      (lambda (x) (ffi-callback (wrapper x) itypes otype abi))
-      (lambda (x) (wrapper (ffi-call x itypes otype abi))))
-    (make-ctype _fpointer
-      (lambda (x) (ffi-callback x itypes otype abi))
-      (lambda (x) (ffi-call x itypes otype abi)))))
+      (lambda (x)
+        (let ([cb (ffi-callback (wrap x) itypes otype abi)])
+          (cond [(eq? keep #t) (hash-set! held-callbacks x cb)]
+                [(box? keep)
+                 (let ([x (unbox keep)])
+                   (set-box! keep
+                             (if (or (null? x) (pair? x)) (cons cb x) cb)))]
+                [(procedure? keep) (keep cb)])
+          cb))
+      (lambda (x) (wrap (ffi-call x itypes otype abi)))))
+  (if wrapper (make-it wrapper) (make-it begin)))
 
 ;; Syntax for the special _fun type:
 ;; (_fun [{(name ... [. name]) | name} [-> expr] ::]
@@ -500,6 +512,7 @@
   (define (err msg . sub) (apply raise-syntax-error '_fun msg stx sub))
   (define xs     #f)
   (define abi    #f)
+  (define keep   #f)
   (define inputs #f)
   (define output #f)
   (define bind   '())
@@ -557,15 +570,16 @@
     ;; parse keywords
     (let loop ()
       (let ([k (and (pair? xs) (pair? (cdr xs)) (syntax-e (car xs)))])
-        (when (keyword? k)
+        (define-syntax-rule (kwds [key var] ...)
           (case k
-            [(#:abi) (if abi
-                       (err "got a second #:abi keyword" (car xs))
-                       (begin (set! abi (cadr xs))
-                              (set! xs (cddr xs))
-                              (loop)))]
-            [else (err "unknown keyword" (car xs))]))))
-    (unless abi (set! abi #'#f))
+            [(key) (if var
+                     (err (format "got a second ~s keyword") 'key (car xs))
+                     (begin (set! var (cadr xs)) (set! xs (cddr xs)) (loop)))]
+            ...
+            [else (err "unknown keyword" (car xs))]))
+        (when (keyword? k) (kwds [#:abi abi] [#:keep keep]))))
+    (unless abi  (set! abi  #'#f))
+    (unless keep (set! keep #'#t))
     ;; parse known punctuation
     (set! xs (map (lambda (x)
                     (syntax-case* x (-> ::) id=? [:: '::] [-> '->] [_  x]))
@@ -655,9 +669,10 @@
                         body 'inferred-name
                         (string->symbol (string-append "ffi-wrapper:" n)))
                        body))])
-        #`(_cprocedure (list #,@(filter-map car inputs)) #,(car output) #,abi
-            (lambda (ffi) #,body)))
-      #`(_cprocedure (list #,@(filter-map car inputs)) #,(car output) #,abi)))
+        #`(_cprocedure* (list #,@(filter-map car inputs)) #,(car output)
+                        #,abi (lambda (ffi) #,body) #,keep))
+      #`(_cprocedure* (list #,@(filter-map car inputs)) #,(car output)
+                      #,abi #f #,keep)))
   (syntax-case stx ()
     [(_ x ...) (begin (set! xs (syntax->list #'(x ...))) (do-fun))]))
 
@@ -961,7 +976,7 @@
 
 (define-struct cvector (ptr type length))
 
-(provide* cvector? cvector-length cvector-type
+(provide* cvector? cvector-length cvector-type cvector-ptr
           ;; make-cvector* is a dangerous operation
           (unsafe (rename-out [make-cvector make-cvector*])))
 
@@ -998,13 +1013,13 @@
   (list->cvector args type))
 
 (define* (cvector-ref v i)
-  (if (and (integer? i) (<= 0 i (sub1 (cvector-length v))))
+  (if (and (exact-nonnegative-integer? i) (< i (cvector-length v)))
     (ptr-ref (cvector-ptr v) (cvector-type v) i)
     (error 'cvector-ref "bad index ~e for cvector bounds of 0..~e"
            i (sub1 (cvector-length v)))))
 
 (define* (cvector-set! v i x)
-  (if (and (integer? i) (<= 0 i (sub1 (cvector-length v))))
+  (if (and (exact-nonnegative-integer? i) (< i (cvector-length v)))
     (ptr-set! (cvector-ptr v) (cvector-type v) i x)
     (error 'cvector-ref "bad index ~e for cvector bounds of 0..~e"
            i (sub1 (cvector-length v)))))
@@ -1061,14 +1076,14 @@
                (list->TAG vals))
              (define* (TAG-ref v i)
                (if (TAG? v)
-                   (if (and (integer? i) (< -1 i (TAG-length v)))
+                   (if (and (exact-nonnegative-integer? i) (< i (TAG-length v)))
                        (ptr-ref (TAG-ptr v) type i)
                        (error 'TAG-ref "bad index ~e for ~a bounds of 0..~e"
                               i 'TAG (sub1 (TAG-length v))))
                    (raise-type-error 'TAG-ref TAGname v)))
              (define* (TAG-set! v i x)
                (if (TAG? v)
-                   (if (and (integer? i) (< -1 i (TAG-length v)))
+                   (if (and (exact-nonnegative-integer? i) (< i (TAG-length v)))
                        (ptr-set! (TAG-ptr v) type i x)
                        (error 'TAG-set! "bad index ~e for ~a bounds of 0..~e"
                               i 'TAG (sub1 (TAG-length v))))
@@ -1176,40 +1191,36 @@
            [error-str (format "~a`~a' pointer"
                               (if nullable? "" "non-null ") tag)]
            [error* (lambda (p) (raise-type-error tag->C error-str p))])
-      (let-syntax ([tag-or-error
-                    (syntax-rules ()
-                      [(tag-or-error ptr t)
-                       (let ([p ptr])
-                         (if (cpointer? p)
-                           (unless (cpointer-has-tag? p t) (error* p))
-                           (error* p)))])]
-                   [tag-or-error/null
-                    (syntax-rules ()
-                      [(tag-or-error/null ptr t)
-                       (let ([p ptr])
-                         (if (cpointer? p)
-                           (when p (unless (cpointer-has-tag? p t) (error* p)))
-                           (error* p)))])])
-        (make-ctype (or ptr-type _pointer)
-          ;; bad hack: `if's outside the lambda for efficiency
-          (if nullable?
-            (if scheme->c
-              (lambda (p) (tag-or-error/null (scheme->c p) tag) p)
-              (lambda (p) (tag-or-error/null p tag) p))
-            (if scheme->c
-              (lambda (p) (tag-or-error (scheme->c p) tag) p)
-              (lambda (p) (tag-or-error p tag) p)))
-          (if nullable?
-            (if c->scheme
-              (lambda (p) (when p (cpointer-push-tag! p tag)) (c->scheme p))
-              (lambda (p) (when p (cpointer-push-tag! p tag)) p))
-            (if c->scheme
-              (lambda (p)
-                (if p (cpointer-push-tag! p tag) (error* p))
-                (c->scheme p))
-              (lambda (p)
-                (if p (cpointer-push-tag! p tag) (error* p))
-                p))))))]))
+      (define-syntax-rule (tag-or-error ptr t)
+        (let ([p ptr])
+          (if (cpointer? p)
+            (if (cpointer-has-tag? p t) p (error* p))
+            (error* p))))
+      (define-syntax-rule (tag-or-error/null ptr t)
+        (let ([p ptr])
+          (if (cpointer? p)
+            (and p (if (cpointer-has-tag? p t) p (error* p)))
+            (error* p))))
+      (make-ctype (or ptr-type _pointer)
+        ;; bad hack: `if's outside the lambda for efficiency
+        (if nullable?
+          (if scheme->c
+            (lambda (p) (tag-or-error/null (scheme->c p) tag))
+            (lambda (p) (tag-or-error/null p tag)))
+          (if scheme->c
+            (lambda (p) (tag-or-error (scheme->c p) tag))
+            (lambda (p) (tag-or-error p tag))))
+        (if nullable?
+          (if c->scheme
+            (lambda (p) (when p (cpointer-push-tag! p tag)) (c->scheme p))
+            (lambda (p) (when p (cpointer-push-tag! p tag)) p))
+          (if c->scheme
+            (lambda (p)
+              (if p (cpointer-push-tag! p tag) (error* p))
+              (c->scheme p))
+            (lambda (p)
+              (if p (cpointer-push-tag! p tag) (error* p))
+              p)))))]))
 
 ;; This is a kind of a pointer that gets a specific tag when converted to
 ;; Scheme, and accepts only such tagged pointers when going to C.  An optional
@@ -1268,10 +1279,13 @@
 ;; Simple structs: call this with a list of types, and get a type that marshals
 ;; C structs to/from Scheme lists.
 (define* (_list-struct . types)
-  (let ([stype (make-cstruct-type types)]
-        [offsets (compute-offsets types)])
+  (let ([stype   (make-cstruct-type types)]
+        [offsets (compute-offsets types)]
+        [len     (length types)])
     (make-ctype stype
       (lambda (vals)
+        (unless (and (list vals) (= len (length vals)))
+          (raise-type-error 'list-struct (format "list of ~a items" len) vals))
         (let ([block (malloc stype)])
           (for-each (lambda (type ofs val) (ptr-set! block type 'abs ofs val))
                     types offsets vals)
@@ -1452,12 +1466,15 @@
                         list->TYPE list*->TYPE TYPE->list TYPE->list*)))))))
   (define (identifiers? stx)
     (andmap identifier? (syntax->list stx)))
-  (define (_-identifier? stx)
-    (and (identifier? stx)
-         (regexp-match #rx"^_.+" (symbol->string (syntax-e stx)))))
+  (define (_-identifier? id stx)
+    (and (identifier? id)
+         (or (regexp-match #rx"^_." (symbol->string (syntax-e id)))
+             (raise-syntax-error #f "cstruct name must begin with a `_'"
+                                 stx id))))
   (syntax-case stx ()
     [(_ _TYPE ([slot slot-type] ...))
-     (and (_-identifier? #'_TYPE) (identifiers? #'(slot ...)))
+     (and (_-identifier? #'_TYPE stx)
+          (identifiers? #'(slot ...)))
      (make-syntax #'_TYPE #f #'(slot ...) #'(slot-type ...))]
     [(_ (_TYPE _SUPER) ([slot slot-type] ...))
      (and (_-identifier? #'_TYPE) (identifiers? #'(slot ...)))
@@ -1553,8 +1570,7 @@
 (define killer-executor (make-will-executor))
 (define killer-thread #f)
 
-(provide* (unsafe register-finalizer))
-(define (register-finalizer obj finalizer)
+(define* (register-finalizer obj finalizer)
   (unless killer-thread
     (set! killer-thread
           (thread (lambda ()
