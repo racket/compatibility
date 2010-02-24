@@ -1652,10 +1652,12 @@ of the contract library does not change over time.
   
   (test/pos-blame
    'object-contract/field2
-   '(contract (object-contract (field x integer?))
-              (new (class object% (field [x #t]) (super-new)))
-              'pos
-              'neg))
+   '(get-field
+     x
+     (contract (object-contract (field x integer?))
+               (new (class object% (field [x #t]) (super-new)))
+               'pos
+               'neg)))
   
   (test/spec-passed/result
    'object-contract/field3
@@ -1669,17 +1671,21 @@ of the contract library does not change over time.
   
   (test/pos-blame
    'object-contract/field4
-   '(contract (object-contract (field x boolean?) (field y boolean?))
-              (new (class object% (field [x #t] [y 'x]) (super-new)))
-              'pos
-              'neg))
+   '(get-field
+     y
+     (contract (object-contract (field x boolean?) (field y boolean?))
+               (new (class object% (field [x #t] [y 'x]) (super-new)))
+               'pos
+               'neg)))
   
   (test/pos-blame
    'object-contract/field5
-   '(contract (object-contract (field x symbol?) (field y symbol?))
-              (new (class object% (field [x #t] [y 'x]) (super-new)))
-              'pos
-              'neg))
+   '(get-field
+     x
+     (contract (object-contract (field x symbol?) (field y symbol?))
+               (new (class object% (field [x #t] [y 'x]) (super-new)))
+               'pos
+               'neg)))
   
   (test/spec-passed/result
    'object-contract/field6
@@ -2710,7 +2716,7 @@ of the contract library does not change over time.
   ;;
   ;; test error message has right format
   ;;
-  
+  #|
   (test/spec-passed/result
    'wrong-method-arity-error-message
    '(with-handlers ([exn:fail? exn-message])
@@ -2722,7 +2728,7 @@ of the contract library does not change over time.
             1
             2))
    "procedure m method: expects 1 argument, given 2: 1 2")
-        
+        |#
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;;
   ;; tests object utilities to be sure wrappers work right
@@ -4521,10 +4527,10 @@ so that propagation occurs.
   
   (ctest #f contract-first-order-passes? (flat-rec-contract the-name) 1)
   
-  (ctest #t contract-first-order-passes? 
+  (ctest #f contract-first-order-passes? 
          (object-contract (m (-> integer? integer?)))
          (new object%))
-  (ctest #t contract-first-order-passes? 
+  (ctest #f contract-first-order-passes? 
          (object-contract (m (-> integer? integer?)))
          1)
   
