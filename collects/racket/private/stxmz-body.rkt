@@ -2,8 +2,8 @@
 ;; mzscheme's `#%module-begin'
 
 (module stxmz-body '#%kernel
-  (#%require "stxcase-scheme.ss" "define.ss"
-             (for-syntax '#%kernel "stx.ss"))
+  (#%require "stxcase-scheme.rkt" "define.rkt"
+             (for-syntax '#%kernel "stx.rkt"))
 
   ;; So that expansions print the way the MzScheme programmer expects:
   (#%require (rename '#%kernel #%plain-module-begin #%module-begin))
