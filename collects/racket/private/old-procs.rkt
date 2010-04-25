@@ -1,10 +1,10 @@
 
 (module old-procs '#%kernel
-  (#%require "small-scheme.ss"
-             "more-scheme.ss"
-             "misc.ss"
-             "stxmz-body.ss"
-             "define.ss")
+  (#%require "small-scheme.rkt"
+             "more-scheme.rkt"
+             "misc.rkt"
+             "stxmz-body.rkt"
+             "define.rkt")
 
   (#%provide make-namespace
              free-identifier=?*

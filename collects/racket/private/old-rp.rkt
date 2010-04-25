@@ -1,6 +1,6 @@
 
 (module old-rp '#%kernel
-  (#%require (for-syntax '#%kernel "stx.ss" "small-scheme.ss" "stxcase-scheme.ss"))
+  (#%require (for-syntax '#%kernel "stx.rkt" "small-scheme.rkt" "stxcase-scheme.rkt"))
 
   (#%provide require require-for-syntax require-for-template require-for-label
              provide provide-for-syntax provide-for-label)
