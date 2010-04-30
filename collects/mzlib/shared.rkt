@@ -16,4 +16,4 @@
     (define make-check-cdr #f)
     ;; Include the implementation.
     ;; See private/shared-body.ss.
-    (include "private/shared-body.ss")))
+    (include "private/shared-body.rkt")))

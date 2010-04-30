@@ -1,6 +1,6 @@
 
 
-(load-relative "loadtest.ss")
+(load-relative "loadtest.rkt")
 
 (Section 'compat)
 

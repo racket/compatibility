@@ -1,7 +1,7 @@
 
-(load-relative "loadtest.ss")
+(load-relative "loadtest.rkt")
 
-;; Hide keywords from scheme/unit.ss:
+;; Hide keywords from scheme/unit.rkt:
 (define import #f)
 (define export #f)
 (define link #f)
@@ -178,7 +178,7 @@
    ()
    (import)
    
-   (include "uinc.ss")))
+   (include "uinc.rkt")))
 
 (test 9 'include (invoke-unit/sig i1@))
 
@@ -189,7 +189,7 @@
    (import)
    
    (+ 3 4)
-   (include "uinc3.ss")))
+   (include "uinc3.rkt")))
 
 (test 9 'include (invoke-unit/sig i1.5@))
 
@@ -198,9 +198,9 @@
    ()
    (import)
    
-   (include "uinc.ss")
-   (include "uinc2.ss")
-   (include "uinc.ss")
+   (include "uinc.rkt")
+   (include "uinc2.rkt")
+   (include "uinc.rkt")
    (+ x 2)))
 
 (test 10 'include (invoke-unit/sig i2@))
@@ -212,7 +212,7 @@
        (unit/sig ()
 	 (import)
 	 (define x 5)
-	 (include "binc.ss")
+	 (include "binc.rkt")
 	 y)))
 
 ; Simple:

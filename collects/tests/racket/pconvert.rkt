@@ -1,5 +1,5 @@
 
-(load-relative "loadtest.ss")
+(load-relative "loadtest.rkt")
 
 (Section 'pconvert)
 
@@ -367,7 +367,7 @@
 
 (test 'empty print-convert '())
 
-(let ([fn (make-temporary-file "pconvert.ss-test~a")])
+(let ([fn (make-temporary-file "pconvert.rkt-test~a")])
   (let ([in (open-input-file fn)])
     (test `(open-input-file ,fn) print-convert in)
     (close-input-port in))

@@ -1,12 +1,12 @@
 #|
 
-This file started out as a copy of contract-test.ss.
+This file started out as a copy of contract-test.rkt.
 Its purpose is to try to ensure that the mzlib version
 of the contract library does not change over time.
 
 |#
 
-(load-relative "loadtest.ss")
+(load-relative "loadtest.rkt")
 (Section 'mzlib/contract)
 
 (parameterize ([error-print-width 200])
@@ -4843,7 +4843,7 @@ so that propagation occurs.
                (provide/contract (struct register ([name any/c] [type any/c])))))
       
       (eval '(require 'pc13-common-msg-structs))
-      (eval '(require (lib "plt-match.ss")))
+      (eval '(require (lib "plt-match.rkt")))
       (eval '(match (make-register 1 2)
                [(struct register (name type))
                 (list name type)])))

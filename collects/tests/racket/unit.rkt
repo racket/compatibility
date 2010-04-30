@@ -1,10 +1,10 @@
 
-(load-relative "loadtest.ss")
+(load-relative "loadtest.rkt")
 
 (Section 'unit)
 (require mzlib/unit200)
 
-;; Hide keywords from scheme/unit.ss:
+;; Hide keywords from scheme/unit.rkt:
 (define import #f)
 (define export #f)
 (define link #f)
