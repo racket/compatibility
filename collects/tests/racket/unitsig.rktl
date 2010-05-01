@@ -1,5 +1,5 @@
 
-(load-relative "loadtest.rkt")
+(load-relative "loadtest.rktl")
 
 ;; Hide keywords from scheme/unit.rkt:
 (define import #f)
@@ -178,7 +178,7 @@
    ()
    (import)
    
-   (include "uinc.rkt")))
+   (include "uinc.rktl")))
 
 (test 9 'include (invoke-unit/sig i1@))
 
@@ -189,7 +189,7 @@
    (import)
    
    (+ 3 4)
-   (include "uinc3.rkt")))
+   (include "uinc3.rktl")))
 
 (test 9 'include (invoke-unit/sig i1.5@))
 
@@ -198,9 +198,9 @@
    ()
    (import)
    
-   (include "uinc.rkt")
-   (include "uinc2.rkt")
-   (include "uinc.rkt")
+   (include "uinc.rktl")
+   (include "uinc2.rktl")
+   (include "uinc.rktl")
    (+ x 2)))
 
 (test 10 'include (invoke-unit/sig i2@))
@@ -212,7 +212,7 @@
        (unit/sig ()
 	 (import)
 	 (define x 5)
-	 (include "binc.rkt")
+	 (include "binc.rktl")
 	 y)))
 
 ; Simple:

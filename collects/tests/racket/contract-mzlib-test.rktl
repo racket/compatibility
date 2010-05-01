@@ -1,12 +1,12 @@
 #|
 
-This file started out as a copy of contract-test.rkt.
+This file started out as a copy of contract-test.rktl.
 Its purpose is to try to ensure that the mzlib version
 of the contract library does not change over time.
 
 |#
 
-(load-relative "loadtest.rkt")
+(load-relative "loadtest.rktl")
 (Section 'mzlib/contract)
 
 (parameterize ([error-print-width 200])
