@@ -78,9 +78,12 @@ of the contract library does not change over time.
   (define (test/spec-failed name expression blame)
     (let ()
       (define (has-proper-blame? msg)
-        (regexp-match?
-         (string-append "(^| )" (regexp-quote blame) " broke")
-         msg))
+        (define reg
+          (case blame
+            [(pos) #rx"^self-contract violation"]
+            [(neg) #rx"blaming neg"]
+            [else (error 'test/spec-failed "unknown blame name ~s" blame)]))
+        (regexp-match? reg msg))
       (printf "testing: ~s\n" name)
       (contract-eval
        `(,thunk-error-test 
@@ -1546,8 +1549,8 @@ of the contract library does not change over time.
                  'pos
                  'neg)
        1)
-      x)
-   (reverse '(1 3 4 2)))
+      (reverse x))
+   '(3 1 2 4))
 
   (test/neg-blame
    'parameter/c1
