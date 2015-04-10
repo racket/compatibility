@@ -20,6 +20,12 @@
                      package-original-identifiers))
 
 
+;; For permission to move scopes from a definition in a package
+;; to a binding of the identifier when the package is opened:
+(define-for-syntax code-insp
+  (variable-reference->module-declaration-inspector
+   (#%variable-reference)))
+
 ;; ----------------------------------------
 
 (begin-for-syntax
@@ -216,8 +222,10 @@
                                stx
                                id))
          (define (locally sig-id)
-           ((make-syntax-delta-introducer sig-id (package-root-id p))
-            (datum->syntax id (syntax-e sig-id) sig-id sig-id)))
+           (define local-id
+             ((make-syntax-delta-introducer (syntax-disarm sig-id code-insp) (package-root-id p))
+              (datum->syntax (syntax-disarm id code-insp) (syntax-e sig-id) sig-id sig-id)))
+           (syntax-rearm (syntax-rearm local-id sig-id) id))
          #`(begin
              #,@(map (lambda (sig-id impl-id)
                        #`(#,def-stxes (#,(locally sig-id))
