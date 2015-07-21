@@ -201,9 +201,13 @@
             (find-ids #'(id ...) values)]
            [(#:all-defined-except (id ...))
             (find-ids #'(id ...) not)]))
-       #`(define-syntax id (package (quote-syntax star-id)
-                                    (quote-syntax #,(map car mapping))
-                                    (quote-syntax #,(map cdr mapping)))))]))
+       (cond
+        [(not (syntax-e #'id))
+         #'(begin)]
+        [else
+         #`(define-syntax id (package (quote-syntax star-id)
+                                      (quote-syntax #,(map car mapping))
+                                      (quote-syntax #,(map cdr mapping))))]))]))
 
 (define-for-syntax (do-open-package stx def-stxes)
   (check-definition-context stx)
@@ -244,11 +248,11 @@
       (syntax-case stx ()
         [(_ form ...)
          #`(drive-top-level
-            (accumulate-package #f #f #f #,stx
-                                #f
-                               ()
-                               #,((make-syntax-introducer)
-                                  #'(form ...))))])))
+            (accumulate-package #f id id #f #,stx
+                                (#:only ())
+                                ()
+                                #,((make-syntax-introducer)
+                                   #'(form ...))))])))
 
 (define-for-syntax (check-definition-context stx)
   (when (eq? 'expression (syntax-local-context))
