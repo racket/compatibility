@@ -413,6 +413,8 @@
   (test '(s 1) (pc #f) (s 1))
   (test '(make-s 1) (pc #t) (s 1)))
 
+(test '(make-prefab-struct 's 1) print-convert (make-prefab-struct 's 1))
+
 (let ([pc
        (lambda (pv)
          (lambda (x)
