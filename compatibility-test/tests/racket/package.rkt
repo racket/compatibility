@@ -1,5 +1,8 @@
 #lang racket/load
-(require rackunit racket/package (for-syntax racket/base))
+(require rackunit
+         racket/package
+         syntax/strip-context
+         (for-syntax racket/base))
 
 (define-syntax test
   (syntax-rules ()
@@ -14,6 +17,21 @@
     [(_ e) (check-exn exn:fail? (λ () e))]
     [(_ e ty?) (check-exn ty? (λ () e))]))
 
+;; Need to remove use-site scopes on syntax objects
+;; that we're going to pass on to `eval`.
+(define-for-syntax (remove-use-site stx)
+  (cond
+   [(identifier? stx) (syntax-local-identifier-as-binding stx)]
+   [(syntax? stx)
+    (datum->syntax (syntax-local-identifier-as-binding (datum->syntax stx 'x))
+                   (remove-use-site (syntax-e stx))
+                   stx
+                   stx)]
+   [(pair? stx)
+    (cons (remove-use-site (car stx))
+          (remove-use-site (cdr stx)))]
+   [else stx]))
+
 (define-syntax (test-pack-seq stx)
   (syntax-case stx ()
     [(_ result form ...)
@@ -21,13 +39,15 @@
                 [pre null])
        (syntax-case forms ()
          [([#:fail expr exn?])
-          (with-syntax ([(form ...) (reverse pre)])
+          (with-syntax ([(form ...) (reverse pre)]
+                        [expr (remove-use-site #'expr)])
             #`(test-pack-seq* (list (quote-syntax form) ...)
                               (quote-syntax [#:fail expr])
                               'expr
                               exn?))]
          [(expr) 
-          (with-syntax ([(form ...) (reverse pre)])
+          (with-syntax ([(form ...) (reverse pre)]
+                        [expr (remove-use-site #'expr)])
             #`(test-pack-seq* (list (quote-syntax form) ...)
                               (quote-syntax expr)
                               'expr
@@ -37,7 +57,7 @@
               #,(loop #'([#:fail expr exn?]) pre)
               #,(loop #'more pre))]
          [(form . more)
-          (loop #'more (cons #'form pre))]))]))
+          (loop #'more (cons (remove-use-site #'form) pre))]))]))
 
 (define (fail? e)
   (syntax-case e ()
