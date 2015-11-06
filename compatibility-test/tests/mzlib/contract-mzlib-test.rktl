@@ -1502,11 +1502,10 @@ of the contract library does not change over time.
    1)
   
   (contract-error-test
-   #'((contract (or/c (-> integer? integer?) (-> boolean? boolean?))
-                (λ (x) x)
-                'pos
-                'neg)
-      #f)
+   #'(contract (or/c (-> integer? integer?) (-> boolean? boolean?))
+               (λ (x) x)
+               'pos
+               'neg)
    exn:fail?)
   
   (test/spec-passed/result
