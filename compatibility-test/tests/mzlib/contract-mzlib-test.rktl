@@ -4333,8 +4333,8 @@ so that propagation occurs.
   (ctest #t contract-stronger? (-> (>=/c 3) (>=/c 3)) (-> (>=/c 3) (>=/c 2)))
   (ctest #f contract-stronger? (-> (>=/c 3) (>=/c 2)) (-> (>=/c 3) (>=/c 3)))
   (ctest #f contract-stronger? (-> (>=/c 2)) (-> (>=/c 3) (>=/c 3)))
-  (ctest #t contract-stronger? (or/c null? any/c) (or/c null? any/c))
-  (ctest #f contract-stronger? (or/c null? any/c) (or/c boolean? any/c))
+  (ctest #t contract-stronger? (or/c null? #f) (or/c null? #f))
+  (ctest #f contract-stronger? (or/c null? #f) (or/c boolean? #f))
   (ctest #t contract-stronger? (or/c null? boolean?) (or/c null? boolean?))
   (ctest #t contract-stronger? (or/c null? boolean?) (or/c boolean? null?))
   (ctest #t contract-stronger? (or/c null? (-> integer? integer?)) (or/c null? (-> integer? integer?)))
@@ -4359,7 +4359,7 @@ so that propagation occurs.
   (ctest #f contract-stronger?
          (or/c (-> string?) (-> integer? integer?))
          (or/c (-> string?) (-> any/c integer?)))
-  (ctest #f contract-stronger?
+  (ctest #t contract-stronger?
          (or/c (-> string?) (-> any/c integer?))
          (or/c (-> string?) (-> integer? integer?)))
   (ctest #t contract-stronger?
