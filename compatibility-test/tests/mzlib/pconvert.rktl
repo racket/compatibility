@@ -6,7 +6,8 @@
 (require mzlib/file
          mzlib/class
          mzlib/pconvert
-         mzlib/pconvert-prop)
+         mzlib/pconvert-prop
+         racket/struct)
 
 (constructor-style-printing #t)
 (quasi-read-style-printing #f)
@@ -223,6 +224,39 @@
                      '(make-immutable-hash))
      (make-same-test (make-immutable-hash (list (cons 'x 1)))
                      '(make-immutable-hash (list (cons 'x 1))))
+     (make-same-test (set 1) '(set 1))
+     (make-same-test (set (set)) '(set (set)))
+     (make-same-test (set (set 1)) '(set (set 1)))
+     (make-pctest (set (list 1 2))
+                  '(set (list 1 2))
+                  '(set (list 1 2))
+                  '(set (list 1 2))
+                  '(set `(1 2))
+                  '(set `(1 2))
+                  '(set `(1 2))
+                  '(set (cons 1 (cons 2 empty))))
+     (make-same-test (seteqv 1) '(seteqv 1))
+     (make-same-test (seteqv (seteqv)) '(seteqv (seteqv)))
+     (make-same-test (seteqv (seteqv 1)) '(seteqv (seteqv 1)))
+     (make-pctest (seteqv (list 1 2))
+                  '(seteqv (list 1 2))
+                  '(seteqv (list 1 2))
+                  '(seteqv (list 1 2))
+                  '(seteqv `(1 2))
+                  '(seteqv `(1 2))
+                  '(seteqv `(1 2))
+                  '(seteqv (cons 1 (cons 2 empty))))
+     (make-same-test (seteq 1) '(seteq 1))
+     (make-same-test (seteq (seteq)) '(seteq (seteq)))
+     (make-same-test (seteq (seteq 1)) '(seteq (seteq 1)))
+     (make-pctest (seteq (list 1 2))
+                  '(seteq (list 1 2))
+                  '(seteq (list 1 2))
+                  '(seteq (list 1 2))
+                  '(seteq `(1 2))
+                  '(seteq `(1 2))
+                  '(seteq `(1 2))
+                  '(seteq (cons 1 (cons 2 empty))))
      (make-pctest (list 'a (box (list '())) (cons 1 '()))
                   '(list (quote a) (box (list empty)) (list 1))
                   '(list (quote a) (box (list empty)) (list 1))
@@ -440,6 +474,21 @@
   (let ([p (make-pt 1 2)])
     (set-pt-y! p p)
     (test '(shared ([-0- (PT! -0- 1)]) -0-) print-convert p)))
+
+;; ----------------------------------------
+
+(let ()
+  (struct point* (coordinates)
+    #:property prop:constructor-style-printer
+    (list
+     (lambda (p) 'point)
+     (lambda (p) (point*-coordinates p))))
+  (define (point . coordinates)
+    (point* coordinates))
+  (test '(point 2 3) print-convert (point 2 3))
+  (test '(point 2 (list 3)) print-convert (point 2 (list 3)))
+  (test '(point 2 3 5) print-convert (point 2 3 5))
+  (test '(point 2 3 (list 5 8)) print-convert (point 2 3 (list 5 8))))
 
 ;; ----------------------------------------
 
