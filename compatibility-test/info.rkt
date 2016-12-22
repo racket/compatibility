@@ -7,6 +7,6 @@
                "rackunit-lib"
                ["pconvert-lib" #:version "1.1"]))
 
-(define pkg-desc "tests for \"compatibility-lib\" and pconvert")
+(define pkg-desc "tests for \"compatibility-lib\"")
 
 (define pkg-authors '(mflatt))
