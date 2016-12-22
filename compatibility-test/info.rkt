@@ -4,8 +4,9 @@
                "racket-test"
                "compatibility-lib"
                "drracket-tool-lib"
-               "rackunit-lib"))
+               "rackunit-lib"
+               ["pconvert-lib" #:version "1.1"]))
 
-(define pkg-desc "tests for \"compatibility-lib\"")
+(define pkg-desc "tests for \"compatibility-lib\" and pconvert")
 
 (define pkg-authors '(mflatt))

@@ -413,6 +413,22 @@
   (test '(s 1) (pc #f) (s 1))
   (test '(make-s 1) (pc #t) (s 1)))
 
+(let ()
+  (define (pc x)
+    (parameterize ([show-sharing #f]
+                   [constructor-style-printing #f]
+                   [quasi-read-style-printing #t])
+      (print-convert x)))
+  (define b (box #f))
+  (define lb (list b))
+  (set-box! b lb)
+  (define v (vector #f))
+  (define lv (list v))
+  (vector-set! v 0 lv)
+
+  (test '(shared ((-0- `(#&,-0-))) -0-) pc lb)
+  (test '(shared ((-0- `(#(,-0-)))) -0-) pc lv))
+
 (test '(make-prefab-struct 's 1) print-convert (make-prefab-struct 's 1))
 
 (let ([pc
