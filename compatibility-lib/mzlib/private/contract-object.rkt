@@ -289,7 +289,7 @@
                      (define p-app
                        (make-wrapper-object blame (list 'method-name ...) (list method-ctc-var ...)))
                      (lambda (val)
-                       (p-app ctc val #f 'field-name ...) (list field-ctc-var ...)))
+                       (p-app ctc val #f '(field-name ...) (list field-ctc-var ...))))
                    #:first-order
                    (lambda (val)
                      (let/ec ret
