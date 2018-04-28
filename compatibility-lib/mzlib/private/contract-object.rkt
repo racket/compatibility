@@ -287,9 +287,11 @@
                    #:projection
                    (lambda (blame)
                      (define p-app
-                       (make-wrapper-object blame (list 'method-name ...) (list method-ctc-var ...)))
+                       (make-wrapper-object blame
+                                            (list 'method-name ...) (list method-ctc-var ...)
+                                            '(field-name ...) (list field-ctc-var ...)))
                      (lambda (val)
-                       (p-app ctc val #f '(field-name ...) (list field-ctc-var ...))))
+                       (p-app ctc val #f)))
                    #:first-order
                    (lambda (val)
                      (let/ec ret
