@@ -21,9 +21,6 @@
              racket/private/promise
              racket/private/cert
              (only racket/private/cond old-cond)
-             ;; shadows #%kernel bindings (but optional keyword arguments
-             ;; are not accessible from `mzscheme`):
-             racket/private/kw-syntax-local
              ;; shadows #%kernel bindings:
              (only racket/private/list 
                    assq assv assoc reverse)
@@ -105,7 +102,6 @@
              #%top-interaction
              map for-each andmap ormap
              assq assv assoc reverse memq memv member
-             (all-from racket/private/kw-syntax-local)
              (rename old-datum #%datum)
              (rename mzscheme-in-stx-module-begin #%module-begin)
              (rename #%module-begin #%plain-module-begin)
