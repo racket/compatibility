@@ -88,7 +88,7 @@
 
 (define w3 (coroutine (lambda (enable-stop)
 			(raise 14))))
-(err/rt-test (coroutine-run (system-idle-evt) w3) (lambda (x) (eq? x 14)))
+(err/rt-test/once (coroutine-run (system-idle-evt) w3) (lambda (x) (eq? x 14)))
 (test #f coroutine-result w3)
 (test #t coroutine-run 100 w3)
 
@@ -96,7 +96,7 @@
 			(enable-stop #f)
 			(raise 15))))
 (test #f coroutine-result w4)
-(err/rt-test (coroutine-run (system-idle-evt) w4) (lambda (x) (eq? x 15)))
+(err/rt-test/once (coroutine-run (system-idle-evt) w4) (lambda (x) (eq? x 15)))
 (test #t coroutine-run 100 w4)
 
 (report-errs)
