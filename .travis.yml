@@ -6,14 +6,17 @@ env:
 - PATH=~/racket/bin:$PATH
 
 before_install:
-- "export DISPLAY=:99.0"
-- "sh -e /etc/init.d/xvfb start"
+#- "export DISPLAY=:99.0"
+#- "sh -e /etc/init.d/xvfb start"
 #- curl -L -o installer.sh http://plt.eecs.northwestern.edu/snapshots/current/installers/racket-test-current-x86_64-linux-precise.sh
 - curl -L -o installer.sh http://www.cs.utah.edu/plt/snapshots/current/installers/racket-current-x86_64-linux-precise.sh
 - sh installer.sh --in-place --dest ~/racket/
 - racket -v
 
 install:
+- raco pkg install --auto -i --no-setup --skip-installed racket-test
+- raco setup --pkgs racket-test
+
 - raco pkg install --auto -i --no-setup --skip-installed compatibility-test
 - racket -l- pkg/dirs-catalog --link --check-metadata pkgs-catalog .
 - echo file://`pwd`/pkgs-catalog/ > catalog-config.txt
@@ -21,11 +24,12 @@ install:
 - raco pkg config --set catalogs `cat catalog-config.txt`
 - raco pkg update -i --auto --no-setup compatibility-lib/ compatibility-test/
 - raco setup --pkgs compatibility compatibility-lib compatibility-test
-- ls $HOME/.racket/download-cache
+
+- ls -1 ~/.racket/download-cache
 
 script:
 - raco test -e -l tests/mzlib/test
 - raco test -e -l tests/racket/package
-- raco test -e -l tests/racket/package-arrow
+- raco test -e -l tests/racket/package-arrows
 
 after_script:
