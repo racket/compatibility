@@ -2722,7 +2722,11 @@ of the contract library does not change over time.
 
   (test/spec-passed/result
    'wrong-method-arity-error-message
-   '(with-handlers ([exn:fail? exn-message])
+   '(with-handlers ([exn:fail? (lambda (exn)
+                                 ;; May or may not report the arguments:
+                                 (regexp-replace #rx"\n  arguments[.][.][.].*"
+                                                 (exn-message exn)
+                                                 ""))])
       (send (contract (object-contract [m (integer? . -> . integer?)])
                       (new (class object% (define/public (m x) x) (super-new)))
                       'pos
@@ -2734,10 +2738,7 @@ of the contract library does not change over time.
     "m method: arity mismatch;\n"
     " the expected number of arguments does not match the given number\n"
     "  expected: 1\n"
-    "  given: 2\n"
-    "  arguments...:\n"
-    "   1\n"
-    "   2"))
+    "  given: 2"))
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;;
