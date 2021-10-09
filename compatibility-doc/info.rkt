@@ -16,3 +16,6 @@
                      "mzscheme-doc"
                      "scheme-lib"))
 (define update-implies '("compatibility-lib"))
+
+(define license
+  '(Apache-2.0 OR MIT))
