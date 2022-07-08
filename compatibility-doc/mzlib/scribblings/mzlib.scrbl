@@ -7,7 +7,7 @@ The @filepath{mzlib} collection contains wrappers and libraries for
 compatibility with older versions of Racket. In many ways, the
 libraries of the @filepath{mzlib} collection go with the
 @racketmodname[mzscheme] legacy language. Newer variants of many
-libraries reside in the @filepath{scheme} collection.
+libraries reside in the @filepath{racket} collection.
 
 @table-of-contents[]
 
