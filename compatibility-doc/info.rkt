@@ -14,7 +14,8 @@
 (define pkg-authors '(eli mflatt robby samth))
 (define build-deps '("data-doc"
                      "mzscheme-doc"
-                     "scheme-lib"))
+                     "scheme-lib"
+                     "scheme-doc"))
 (define update-implies '("compatibility-lib"))
 
 (define license
