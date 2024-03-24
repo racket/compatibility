@@ -22,7 +22,10 @@
          massoc
          mlist->list
          list->mlist
-         mlistof)
+         mlistof
+         mandmap
+         mormap
+         mremw)
 
 (begin-encourage-inline
  (define mmap
@@ -209,7 +212,7 @@
      [(p? (mcar l)) (loop (mcdr l))]
      [else #f])))
 
-(define (mmandmap predicate? lst)
+(define (mandmap predicate? lst)
   (cond
     [(null? lst) #t]
     [else
@@ -218,7 +221,7 @@
               #f
               (mmandmap predicate? (mcdr lst)))]))
 
-(define (mmormap predicate? lst)
+(define (mormap predicate? lst)
   (cond
     [(null? lst) #f]
     [else
@@ -227,7 +230,7 @@
               #t
               (mmormap predicate? (mcdr lst)))]))
 
-(define (mmremw v lst)
+(define (mremw v lst)
   (cond
     [(null? lst) null]
     [(if (equal? (mcar lst) v)
