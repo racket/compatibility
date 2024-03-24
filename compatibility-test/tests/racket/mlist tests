@@ -1,0 +1,30 @@
+; mmandmap tests
+(define all-integers (mlist 3 24 6 66))
+(define all-strings (mlist "green" "wind" "4"))
+
+(equal? (mmandmap integer? all-integers) #t)
+(equal? (mmandmap string? all-strings) #t)
+(equal? (mmandmap integer? all-strings) #f)
+(equal? (mmandmap string? all-integers) #f)
+
+; mmormap tests
+(define single-integer (mlist "i" 'one 9 "umbrella"))
+(define no-integer (mlist "i" 'one "umbrella"))
+(define single-string (mlist '1L 0 7 "match"))
+(define no-string (mlist '1L 0 7))
+  
+(equal? (mmormap integer? single-integer) #t)
+(equal? (mmormap integer? all-integers) #t)
+(equal? (mmormap integer? no-integer) #f)
+(equal? (mmormap string? single-string) #t)
+(equal? (mmormap string? all-strings) #t)
+(equal? (mmormap string? no-string) #f)
+
+; mmremw tests
+(define contains-2 (mlist "u" 'twenty 2 88))
+(define no-2 (mlist "u" 'twenty 88))
+(define contains-hibiscus (mlist "hibiscus" "daffodil" "tulip"))
+(define no-hibiscus (mlist "daffodil" "tulip"))
+  
+(equal? (mmremw 2 contains-2) no-2)
+(equal? (mmremw "hibiscus" contains-hibiscus) no-hibiscus)
