@@ -208,3 +208,29 @@
      [(not (mpair? l)) #f]
      [(p? (mcar l)) (loop (mcdr l))]
      [else #f])))
+
+(define (mmandmap predicate? lst)
+  (cond
+    [(null? lst) #t]
+    [else
+     (if
+      (not (equal? (predicate? (mcar lst)) #t))
+              #f
+              (mmandmap predicate? (mcdr lst)))]))
+
+(define (mmormap predicate? lst)
+  (cond
+    [(null? lst) #f]
+    [else
+     (if
+      (equal? (predicate? (mcar lst)) #t)
+              #t
+              (mmormap predicate? (mcdr lst)))]))
+
+(define (mmremw v lst)
+  (cond
+    [(null? lst) null]
+    [(if (equal? (mcar lst) v)
+         (mmremw v (mcdr lst))
+         (mcons (mcar lst)
+               (mmremw v (mcdr lst))))]))
