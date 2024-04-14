@@ -2,7 +2,12 @@
 
 (require (for-syntax racket/base
                      racket/contract/private/helpers
-                     racket/struct-info)
+                     racket/struct-info
+                     (rename-in syntax/private/boundmap
+                                ;; the private version of the library
+                                ;; (the one without contracts)
+                                ;; has these old, wrong names in it.
+                                [make-module-identifier-mapping make-free-identifier-mapping]))
          racket/contract/private/guts
          racket/contract/private/misc)
 
@@ -41,7 +46,7 @@
                      (rev-selector-id ...)
                      (mutator-id ...)
                      super-id)
-                    (extract-struct-info (lookup-struct-info (syntax struct-name) stx))])
+                    (extract-struct-info (lookup-struct-info (syntax struct-name) (make-free-identifier-mapping) stx))])
        (unless (= (length (syntax->list (syntax (rev-selector-id ...))))
                   (length (syntax->list (syntax (args ...)))))
          (raise-syntax-error 'struct/c 
