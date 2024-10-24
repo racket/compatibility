@@ -81,6 +81,16 @@ A parameter that controls whether a @racketidfont{make-} prefix is
 added to a constructor name for a structure instance.  The initial
 value of the parameter is @racket[#f].}
 
+@defboolparam[hash-table-constructor-with-lists use-list?]{
+ A parameter that controls whether the key/value pairs in a
+ hash are printed with @racketidfont{cons} or
+ @racketidfont{list}. The initial value of the parameter is
+ @racket[#f], meaning that a hash table like @racket[(hash 'x 1 'y 2)]
+ converts to @racket['(make-hash (list (list 'x 1) (list 'y 1)))].
+
+ @history[#:added "1.2"]
+}
+
 
 
 @defproc[(build-share [v any/c]) ....]{
