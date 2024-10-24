@@ -86,7 +86,7 @@ value of the parameter is @racket[#f].}
  hash are printed with @racketidfont{cons} or
  @racketidfont{list}. The initial value of the parameter is
  @racket[#f], meaning that a hash table like @racket[(hash 'x 1 'y 2)]
- converts to @racket['(make-hash (list (list 'x 1) (list 'y 1)))].
+ converts to @racket['(make-immutable-hash (list (cons 'y 2) (cons 'x 1)))].
 
  @history[#:added "1.2"]
 }
