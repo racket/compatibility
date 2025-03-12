@@ -7,7 +7,8 @@
                "sandbox-lib"
 	       "compiler-lib"
                "gui-lib"
-               "racket-doc"))
+               "racket-doc"
+               "pconvert-doc"))
 
 (define pkg-desc "documentation part of \"compatibility\"")
 
@@ -16,6 +17,7 @@
                      "mzscheme-doc"
                      "scheme-lib"
                      "scheme-doc"))
+(define implies '("pconvert-doc"))
 (define update-implies '("compatibility-lib"))
 
 (define license
