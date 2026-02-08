@@ -1,10 +1,15 @@
 
 (module old-procs '#%kernel
-  (#%require racket/private/small-scheme
-             racket/private/more-scheme
-             racket/private/define
-             racket/private/member
-	     (only racket/private/misc collection-path collection-file-path))
+  (#%require (only racket/base
+                   and
+                   define
+                   let
+                   let*
+                   or
+                   parameterize
+                   quasiquote
+                   unless
+                   when))
 
   (#%provide make-namespace
              free-identifier=?*

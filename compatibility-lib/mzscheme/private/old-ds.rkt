@@ -1,8 +1,14 @@
 
 (module old-ds '#%kernel
-  (#%require racket/private/define-struct
+  (#%require (only racket/base define-struct/derived)
              (for-syntax '#%kernel
-                         racket/private/stxcase-scheme))
+                         (only racket/base
+                               ...
+                               _
+                               syntax
+                               syntax-case
+                               syntax-rules
+                               with-syntax)))
 
   (#%provide define-struct let-struct old-datum)
   

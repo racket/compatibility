@@ -3,7 +3,7 @@
 
 (module stxmz-body '#%kernel
   ;; These could probably change to just be `(require racket/base)`.
-  (#%require racket/private/define
+  (#%require (only racket/base define-syntax)
              (for-syntax '#%kernel racket/private/stx))
 
   ;; So that expansions print the way the Racket programmer expects:
