@@ -222,9 +222,13 @@
                    force
                    promise?)
 
-             (only racket/private/more-scheme old-case fluid-let)
-             (only racket/private/cond old-cond)
-             (only racket/private/define define define-syntax define-for-syntax)
+             (only racket/private/for-compatability-lib
+                   define
+                   define-for-syntax
+                   define-syntax
+                   fluid-let
+                   old-case
+                   old-cond)
 
              mzscheme/private/stxmz-body
              mzscheme/private/old-ds
