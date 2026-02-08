@@ -2,32 +2,238 @@
 ;; mzscheme: provide everything
 
 (module mzscheme '#%kernel
-  (#%require racket/private/more-scheme
-             (all-except racket/private/misc
-			 collection-path
-			 collection-file-path)
-             racket/private/letstx-scheme
-             racket/private/stxcase-scheme
-             racket/private/stx
-             racket/private/qqstx
-             racket/private/define
+
+  (#%require (only racket/base
+                   ...
+                   and
+                   andmap
+                   arity-at-least
+                   assoc
+                   assq
+                   assv
+                   break-parameterization?
+                   bytes-environment-variable-name?
+                   call-with-break-parameterization
+                   call-with-default-reading-parameterization
+                   call-with-exception-handler
+                   call-with-parameterization
+                   call/cc
+                   call/ec
+                   channel-get
+                   channel-put
+                   channel-try-get
+                   check-duplicate-identifier
+                   current-break-parameterization
+                   current-parameterization
+                   date
+                   date*
+                   define-logger
+                   define-syntax-rule
+                   define-values-for-syntax
+                   displayln
+                   do
+                   exn
+                   exn:break
+                   exn:break:hang-up
+                   exn:break:terminate
+                   exn:fail
+                   exn:fail:contract
+                   exn:fail:contract:arity
+                   exn:fail:contract:continuation
+                   exn:fail:contract:divide-by-zero
+                   exn:fail:contract:non-fixnum-result
+                   exn:fail:contract:variable
+                   exn:fail:filesystem
+                   exn:fail:filesystem:errno
+                   exn:fail:filesystem:exists
+                   exn:fail:filesystem:missing-module
+                   exn:fail:filesystem:version
+                   exn:fail:network
+                   exn:fail:network:errno
+                   exn:fail:out-of-memory
+                   exn:fail:read
+                   exn:fail:read:eof
+                   exn:fail:read:non-char
+                   exn:fail:syntax
+                   exn:fail:syntax:missing-module
+                   exn:fail:syntax:unbound
+                   exn:fail:unsupported
+                   exn:fail:user
+                   find-executable-path
+                   for-each
+                   generate-temporaries
+                   getenv
+                   guard-evt
+                   hash-has-key?
+                   hash-ref!
+                   identifier?
+                   let
+                   let*
+                   let*-values
+                   let-syntax
+                   let-syntaxes
+                   let/cc
+                   let/ec
+                   letrec
+                   letrec-syntax
+                   letrec-syntaxes
+                   load-relative
+                   load-relative-extension
+                   load/cd
+                   make-arity-at-least
+                   make-date
+                   make-date*
+                   make-exn
+                   make-exn:break
+                   make-exn:break:hang-up
+                   make-exn:break:terminate
+                   make-exn:fail
+                   make-exn:fail:contract
+                   make-exn:fail:contract:arity
+                   make-exn:fail:contract:continuation
+                   make-exn:fail:contract:divide-by-zero
+                   make-exn:fail:contract:non-fixnum-result
+                   make-exn:fail:contract:variable
+                   make-exn:fail:filesystem
+                   make-exn:fail:filesystem:errno
+                   make-exn:fail:filesystem:exists
+                   make-exn:fail:filesystem:missing-module
+                   make-exn:fail:filesystem:version
+                   make-exn:fail:network
+                   make-exn:fail:network:errno
+                   make-exn:fail:out-of-memory
+                   make-exn:fail:read
+                   make-exn:fail:read:eof
+                   make-exn:fail:read:non-char
+                   make-exn:fail:syntax
+                   make-exn:fail:syntax:missing-module
+                   make-exn:fail:syntax:unbound
+                   make-exn:fail:unsupported
+                   make-exn:fail:user
+                   make-srcloc
+                   map
+                   member
+                   normal-case-path
+                   or
+                   ormap
+                   parameterize
+                   parameterize*
+                   parameterize-break
+                   path-add-extension
+                   path-add-suffix
+                   path-list-string->path-list
+                   path-replace-extension
+                   path-replace-suffix
+                   path-string?
+                   port?
+                   println
+                   putenv
+                   quasiquote
+                   quasisyntax
+                   quasisyntax/loc
+                   quote-syntax/prune
+                   rationalize
+                   read-eval-print-loop
+                   reroot-path
+                   reverse
+                   set!-values
+                   srcloc
+                   string-environment-variable-name?
+                   syntax
+                   syntax-case
+                   syntax-case*
+                   syntax-id-rules
+                   syntax-local-certifier
+                   syntax-protect
+                   syntax-recertify
+                   syntax-rules
+                   syntax/loc
+                   time
+                   unless
+                   unsyntax
+                   unsyntax-splicing
+                   when
+                   with-handlers
+                   with-handlers*
+                   with-syntax
+                   writeln
+                   ~?
+                   ~@
+
+                   ; This is the only import or export at phase != 0. It was introduced,
+                   ; likely accidentally, in 224f9fa3a76371ea1d02ee4d9c4c2c4973af913e
+                   ; (r14661) when stxcase-scheme.ss began exporting it, and the export
+                   ; got carried along with an `all-from` provide through mzscheme.
+                   syntax-pattern-variable?)
+
+             (only racket/tcp
+                   listen-port-number?
+                   port-number?
+                   tcp-abandon-port
+                   tcp-accept
+                   tcp-accept-evt
+                   tcp-accept-ready?
+                   tcp-accept/enable-break
+                   tcp-addresses
+                   tcp-close
+                   tcp-connect
+                   tcp-connect/enable-break
+                   tcp-listen
+                   tcp-listener?
+                   tcp-port?)
+
+             (only racket/udp
+                   udp-addresses
+                   udp-bind!
+                   udp-bound?
+                   udp-close
+                   udp-connect!
+                   udp-connected?
+                   udp-multicast-interface
+                   udp-multicast-join-group!
+                   udp-multicast-leave-group!
+                   udp-multicast-loopback?
+                   udp-multicast-set-interface!
+                   udp-multicast-set-loopback!
+                   udp-multicast-set-ttl!
+                   udp-multicast-ttl
+                   udp-open-socket
+                   udp-receive!
+                   udp-receive!*
+                   udp-receive!-evt
+                   udp-receive!/enable-break
+                   udp-receive-ready-evt
+                   udp-send
+                   udp-send*
+                   udp-send-evt
+                   udp-send-ready-evt
+                   udp-send-to
+                   udp-send-to*
+                   udp-send-to-evt
+                   udp-send-to/enable-break
+                   udp-send/enable-break
+                   udp-set-receive-buffer-size!
+                   udp-set-ttl!
+                   udp-ttl
+                   udp?)
+
+             (only racket/promise
+                   delay
+                   force
+                   promise?)
+
+             (only racket/private/more-scheme old-case fluid-let)
+             (only racket/private/cond old-cond)
+             (only racket/private/define define define-syntax define-for-syntax)
+
              mzscheme/private/stxmz-body
              mzscheme/private/old-ds
              mzscheme/private/old-rp
              mzscheme/private/old-if
              mzscheme/private/old-procs
-             racket/private/map ; shadows #%kernel bindings
-             racket/private/kernstruct
-             racket/private/promise
-             racket/private/cert
-             (only racket/private/cond old-cond)
-             ;; shadows #%kernel bindings:
-             (only racket/private/list 
-                   assq assv assoc reverse)
-             racket/private/member
-             racket/tcp
-             racket/udp
-             '#%builtin) ; so it's attached
+
+             (only '#%builtin)) ; so it's attached
+
 
   (#%provide #%app
              (rename old-datum #%datum)
