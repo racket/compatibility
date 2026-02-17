@@ -222,7 +222,7 @@
                    force
                    promise?)
 
-             (only racket/private/for-compatability-lib
+             (only racket/private/for-compatibility-lib
                    define
                    define-for-syntax
                    define-syntax

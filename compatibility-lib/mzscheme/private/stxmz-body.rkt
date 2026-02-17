@@ -4,7 +4,7 @@
 (module stxmz-body '#%kernel
   ;; These could probably change to just be `(require racket/base)`.
   (#%require (only racket/base define-syntax)
-             (for-syntax '#%kernel racket/private/for-compatability-lib))
+             (for-syntax '#%kernel racket/private/for-compatibility-lib))
 
   ;; So that expansions print the way the Racket programmer expects:
   (#%require (rename '#%kernel #%plain-module-begin #%module-begin))
