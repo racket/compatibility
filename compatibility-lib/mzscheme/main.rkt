@@ -230,11 +230,11 @@
                    old-case
                    old-cond)
 
-             mzscheme/private/stxmz-body
-             mzscheme/private/old-ds
-             mzscheme/private/old-rp
-             mzscheme/private/old-if
-             mzscheme/private/old-procs
+             "private/stxmz-body.rkt"
+             "private/old-ds.rkt"
+             "private/old-rp.rkt"
+             "private/old-if.rkt"
+             "private/old-procs.rkt"
 
              (only '#%builtin)) ; so it's attached
 
