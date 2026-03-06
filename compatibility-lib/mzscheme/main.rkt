@@ -223,14 +223,12 @@
                    promise?)
 
              (only racket/private/for-compatibility-lib
-                   define
-                   define-for-syntax
-                   define-syntax
                    fluid-let
                    old-case
                    old-cond)
 
              "private/stxmz-body.rkt"
+             "private/old-def.rkt"
              "private/old-ds.rkt"
              "private/old-rp.rkt"
              "private/old-if.rkt"
